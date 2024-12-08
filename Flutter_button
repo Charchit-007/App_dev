@@ -1,0 +1,84 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' ;
+
+void main(){
+  runApp(const MyButtonApp());
+}
+
+class MyButtonApp extends StatelessWidget {
+  const MyButtonApp({super.key});
+
+/*  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home:Scaffold(
+        appBar: AppBar(
+          title: const Text('Simple Button Demo'),
+        ),
+        body:Center(
+          child: ElevatedButton.icon(
+            onPressed: showMsg,
+            //icon: const Icon(Icons.add_alert_rounded),
+            icon: const Icon(CupertinoIcons.bell),
+            label: const Text('Like'),
+            )
+            //child: const Text('Try Clicking!'),
+        ),
+      ),
+    );
+  }
+*/
+/*  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home:Scaffold(
+        appBar: AppBar(
+          title: const Text('Simple Button Demo'),
+        ),
+        body:Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255,45,56,234),
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              )
+            ),
+            onPressed: showMsg,
+            child : const Text("try Clicking!"),
+            )
+        ),
+      ),
+    );
+  }
+*/  
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home:Scaffold(
+        appBar: AppBar(
+          title: const Text('Simple Button Demo'),
+        ),
+        body:Container(
+          decoration: BoxDecoration( 
+            gradient: const LinearGradient(
+              colors: [Colors.green,Colors.grey],
+            ),  
+            borderRadius: BorderRadius.circular(15),  
+           ),
+           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+            ),
+            onPressed: showMsg,
+            child: const Text("Text gradient")
+           )
+        ),
+      ),
+    );
+  }
+  void showMsg() {
+    print("i am inside inside showMsg ") ;
+  }
+}
