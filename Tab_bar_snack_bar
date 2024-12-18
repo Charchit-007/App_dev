@@ -1,0 +1,159 @@
+import 'package:flutter/material.dart';
+
+//TAB BAR
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+   return DefaultTabController(
+     length: 3,
+ child: Scaffold(
+  appBar: AppBar(
+   title: const Text('Travel Modes'),
+   bottom: const TabBar(
+  tabs: [
+     Tab(
+   text: 'Study',
+  icon: Icon(Icons.book),
+  ),
+   Tab(
+  text: 'Game',
+   icon: Icon(Icons.gamepad_outlined),
+  ),
+  Tab(
+  text: 'Sleep',
+  icon: Icon(Icons.bed),
+   ),
+  ],
+   ),
+  ),
+  body:  TabBarView(
+   children: [
+
+ Center(
+            child: ElevatedButton(
+                onPressed: (){
+                  dispMessage(),
+                    //creating snack bar
+                    final msnackBar = SnackBar(
+                      content: const Text('Good to go!!'),
+                      action :SnackBarAction(
+                        label: 'undo',
+                        onPressed:(){
+                          //place your action
+                          // ignore: avoid_print
+                          print('Undo was clicked');
+                        },
+                        ),
+                    );
+                
+                // display the snack bar using scaffold messanger
+                ScaffoldMessenger.of(context).showSnackBar(msnackBar);
+                },
+                child: const Text('Check battery status'),
+            ),
+        ),
+ Center(
+  child: Text('Game', style: textStyle),
+ ),
+  Center(
+ child: Text(
+ 'Sleep',
+ style: textStyle,
+ ),
+ ),
+  ],
+  ),
+ ),
+ );
+ }
+}
+
+const textStyle = TextStyle(fontSize: 35);
+
+
+
+
+import 'package:flutter/material.dart';
+
+/*void main() {
+    runApp(const MySnackBarApp());
+}*/
+
+class MySnackBarApp extends StatelessWidget{
+    const MySnackBarApp({super.key});
+
+    @override
+    Widget build(BuildContext context){
+        return MaterialApp(
+            home: Scaffold(
+                appBar: AppBar(
+                    title: const Text('Battery Level'),
+                ),
+                body: const SnackBarPage(),
+            ),
+        );
+    }
+}
+
+class SnackBarPage extends StatelessWidget{
+    const SnackBarPage({super.key});
+
+    @override
+    Widget build(BuildContext context){
+        return Center(
+            child: ElevatedButton(
+                onPressed: (){
+                    //creating snack bar
+                    final msnackBar = SnackBar(
+                      content: const Text('Good to go!!'),
+                      action :SnackBarAction(
+                        label: 'undo',
+                        onPressed:(){
+                          dispMessage(),
+                          //place your action
+                          // ignore: avoid_print
+                          print('Undo was clicked');
+                        },
+                        ),
+                    );
+                
+                // display the snack bar using scaffold messanger
+                ScaffoldMessenger.of(context).showSnackBar(msnackBar);
+                },
+                child: const Text('Check battery status'),
+            ),
+        );
+    }
+    
+      void dispMessage() {
+        print ("inside display");
+      }
+}
+
+
+
+import 'package:flutter/material.dart';
+import 'home_screen.dart';
+//import 'snack_bar.dart';
+
+void main() {
+ runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+ const MyApp({super.key});
+ @override
+ Widget build(BuildContext context) {
+  return MaterialApp(
+  title: 'Flutter Demo',
+ theme: ThemeData(
+ primarySwatch: Colors.amber,
+  ),
+  home: const HomeScreen(),
+  //home: const MySnackBarApp(),
+  );
+}
+}
