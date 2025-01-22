@@ -1,0 +1,245 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MyStepper(),
+    );
+  }
+}
+
+class MyStepper extends StatefulWidget {
+  const MyStepper({super.key});
+
+  @override
+  State<MyStepper> createState() => _MyStepperState();
+}
+
+class _MyStepperState extends State<MyStepper> {
+  String _output = 'Form Filling';
+  int _currentStep = 0;
+
+  final List<Step> _steps = [
+    Step(
+      title: const Text("Project Details"),
+      content: projectDetailsForm(),
+      isActive: true, // to highlight to current step 
+    ),
+    Step(
+      title: const Text("Team Member"),
+      content: teammemberForm(),
+      isActive: true,
+    ),
+    Step(
+      title: const Text("Timeline"),
+      content: timelineForm(),
+      isActive: true,
+    ),
+    Step(
+      title: const Text("Budget"),
+      content: budgetForm(),
+      isActive: true,
+    ),
+    Step(
+      title: const Text("Review & Submit"),
+      content: reviewForm(),
+      isActive: true,
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_output),
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: Stepper(
+        currentStep: _currentStep,
+        onStepContinue: () {
+          setState(() {
+            if (_currentStep < _steps.length - 1) {
+              _currentStep++;
+              _output = "Form Filling";
+            } else {
+              _output = "Thank You !!";
+            }
+          });
+        },
+        onStepCancel: () {
+          setState(() {
+            if (_currentStep > 0) {
+              _currentStep--;
+              _output = "Form Filling";
+            } else {
+              _output = "You are on Step 1";
+            }
+          });
+        },
+        steps: _steps,
+        controlsBuilder: (BuildContext context, ControlsDetails details) {
+          return Row(
+            children: [
+              ElevatedButton(
+                onPressed: details.onStepContinue,
+                child: const Text('Next'),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: details.onStepCancel,
+                child: const Text('Back'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+// --- Widgets ---
+
+Widget projectDetailsForm() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      TextField(
+        decoration: InputDecoration(
+          labelText: "Project Name",
+          border: OutlineInputBorder(),
+        ),
+      ),
+      const SizedBox(height: 16),
+      TextField(
+        decoration: InputDecoration(
+          labelText: "Project Description",
+          border: OutlineInputBorder(),
+        ),
+      ),
+    ],
+  );
+}
+
+Widget teammemberForm() {
+  String? selectedRole;
+  final List<String> roles = ["Developer", "Designer", "Manager", "Tester"];
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      TextField(
+        decoration: InputDecoration(
+          labelText: "Add Team Member",
+          border: OutlineInputBorder(),
+        ),
+      ),
+      const SizedBox(height: 16),
+      DropdownButtonFormField<String>(
+        decoration: InputDecoration(
+          labelText: "Select Role",
+          border: OutlineInputBorder(),
+        ),
+        value: selectedRole,
+        items: roles.map((role) {
+          return DropdownMenuItem<String>(
+            value: role,
+            child: Text(role),
+          );
+        }).toList(),
+        onChanged: (value) {
+          selectedRole = value;
+        },
+      ),
+    ],
+  );
+}
+
+Widget timelineForm() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      DatePickerField(label: "Start Date"),
+      const SizedBox(height: 16),
+      DatePickerField(label: "End Date"),
+    ],
+  );
+}
+
+Widget budgetForm() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      TextField(
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          labelText: "Estimated Budget",
+          border: OutlineInputBorder(),
+        ),
+      ),
+    ],
+  );
+}
+
+Widget reviewForm() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text("Review all the details before submitting."),
+      const SizedBox(height: 16),
+      ElevatedButton(
+        onPressed: () {
+          // Add submission logic here
+        },
+        child: const Text("Submit"),
+      ),
+    ],
+  );
+}
+
+class DatePickerField extends StatefulWidget {
+  final String label;
+
+  const DatePickerField({required this.label});
+
+  @override
+  _DatePickerFieldState createState() => _DatePickerFieldState();
+}
+
+class _DatePickerFieldState extends State<DatePickerField> {
+  DateTime? selectedDate;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      readOnly: true,
+      controller: TextEditingController(
+        text: selectedDate != null
+            ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
+            : "",
+      ),
+      decoration: InputDecoration(
+        labelText: widget.label,
+        border: OutlineInputBorder(),
+        suffixIcon: const Icon(Icons.calendar_today),
+      ),
+      onTap: () async {
+        DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: selectedDate ?? DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+        );
+        if (pickedDate != null) {
+          setState(() {
+            selectedDate = pickedDate;
+          });
+        }
+      },
+    );
+  }
+}
