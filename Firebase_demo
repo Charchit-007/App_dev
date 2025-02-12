@@ -1,0 +1,232 @@
+terminal code - flutter pub add firebase_core firebase_auth
+WEB APP & ANDROID APP
+*******main.dart*******
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'signup_screen.dart';
+import 'home_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          //your configs go here
+          apiKey: "AIzaSyDgdUIvOvjZYQ7pOdlxCi0dJ2HRoOhHoBs",
+          authDomain: "fdemo-d73be.firebaseapp.com",
+          projectId: "fdemo-d73be",
+          storageBucket: "fdemo-d73be.firebasestorage.app",
+          messagingSenderId: "104496053959",
+          appId: "1:104496053959:web:adad9efc23cba8e642c8e2",
+  measurementId: "G-6K1XQ50X2J"),
+        );
+  } else { // for android and ios as web doesnt need any configuration
+    await Firebase.initializeApp();
+  }
+
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            return snapshot.hasData ? HomeScreen() : SignUpScreen();
+          }
+          return Center(child: CircularProgressIndicator());
+        },
+      ),
+    );
+  }
+}
+
+*******auth_service.dart*****
+import 'package:firebase_auth/firebase_auth.dart';
+
+class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Signup
+  Future<User?> signUpWithEmailPassword(String email, String password) async {
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      print("Signup Error: $e");
+      return null;
+    }
+  }
+
+  // Signin
+  Future<User?> signInWithEmailPassword(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      print("Signin Error: $e");
+      return null;
+    }
+  }
+
+  // Signout
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+}
+
+*********home_screen.dart******
+import 'package:flutter/material.dart';
+import 'auth_service.dart';
+import 'signin_screen.dart';
+
+class HomeScreen extends StatelessWidget {
+  final AuthService _authService = AuthService();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Home"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await _authService.signOut();
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => SignInScreen()));
+            },
+          ),
+        ],
+      ),
+      body: Center(child: Text("Welcome to Home Page!")),
+    );
+  }
+}
+
+********signin_screen.dart*******
+import 'package:flutter/material.dart';
+import 'auth_service.dart';
+import 'home_screen.dart';
+
+class SignInScreen extends StatefulWidget {
+  @override
+  _SignInScreenState createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+
+  Future<void> signIn() async {
+    var user = await _authService.signInWithEmailPassword(
+      emailController.text.trim(),
+      passwordController.text.trim(),
+    );
+
+    if (user != null) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => HomeScreen()));
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Signin Failed')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Sign In")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+                controller: emailController,
+                decoration: InputDecoration(labelText: "Email")),
+            TextField(
+                controller: passwordController,
+                decoration: InputDecoration(labelText: "Password"),
+                obscureText: true),
+            SizedBox(height: 20),
+            ElevatedButton(onPressed: signIn, child: Text("Sign In")),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+*********signup_screen.dart**********
+import 'package:flutter/material.dart';
+import 'auth_service.dart';
+import 'signin_screen.dart';
+
+class SignUpScreen extends StatefulWidget {
+  @override
+  _SignUpScreenState createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+
+  Future<void> signUp() async {
+    var user = await _authService.signUpWithEmailPassword(
+      emailController.text.trim(),
+      passwordController.text.trim(),
+    );
+
+    if (user != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Signup Successful!')));
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Signup Failed')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Sign Up")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+                controller: emailController,
+                decoration: InputDecoration(labelText: "Email")),
+            TextField(
+                controller: passwordController,
+                decoration: InputDecoration(labelText: "Password"),
+                obscureText: true),
+            SizedBox(height: 20),
+            ElevatedButton(onPressed: signUp, child: Text("Sign Up")),
+            TextButton(
+              onPressed: () => Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => SignInScreen())),
+              child: Text("Already have an account? Sign In"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
