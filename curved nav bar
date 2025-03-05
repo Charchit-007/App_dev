@@ -1,0 +1,138 @@
+curved nav bar
+import 'package:flutter/material.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+void main() {
+  runApp(const MaterialApp(
+    title: 'Curved Navigation Bar',
+    home: BottomNavBar(),
+    debugShowCheckedModeBanner: false
+  ));
+}
+
+class BottomNavBar extends StatefulWidget {
+  const BottomNavBar({super.key});
+
+  @override //no need for any changes
+  State<BottomNavBar> createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends State<BottomNavBar> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    const HomeScreen(), //constructor
+    const Reminders(), //constructor
+    const Profiles(), //constructor
+    const Settings(), //constructor
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: CurvedNavigationBar(
+        items: const <Widget>[
+          Icon(
+            Icons.home,
+            size: 20,
+            semanticLabel: "Home Screen",
+          ),
+          Icon(
+            Icons.notifications,
+            size: 20,
+            semanticLabel: "Reminder",
+          ),
+          Icon(
+            Icons.person,
+            size: 20,
+            semanticLabel: "Profile",
+          ),
+          Icon(
+            Icons.settings,
+            size: 20,
+            semanticLabel: "settings",
+          ),
+        ],
+        color: Colors.lightBlue,
+        buttonBackgroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 500),
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        letIndexChange: (IndexError) => true,
+      ),
+      body: _screens[_currentIndex], //main logic
+    );
+  }
+} //class _BottomNavBarState ends here
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.amber,
+      child: const Center(
+        child: Text(
+          "Home Screen",
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+  }
+}
+
+class Reminders extends StatelessWidget {
+  const Reminders({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.red,
+      child: const Center(
+        child: Text(
+          "Reminder",
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+  }
+}
+
+class Profiles extends StatelessWidget {
+  const Profiles({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.orange,
+      child: const Center(
+        child: Text(
+          "Profiles",
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+  }
+}
+
+class Settings extends StatelessWidget {
+  const Settings({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.green,
+      child: const Center(
+        child: Text(
+          "Settings",
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+  }
+}
